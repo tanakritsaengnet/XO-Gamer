@@ -415,7 +415,6 @@ public class FrameGame extends javax.swing.JFrame {
         for (JButton jButton : jButtons) {
             jButton.setIcon(null);
         }
-        xo.oldPosition = 0;
         position = 0;
     }
 

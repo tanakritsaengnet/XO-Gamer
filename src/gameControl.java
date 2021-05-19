@@ -30,11 +30,13 @@ public class gameControl implements Runnable {
     private final String startString = "Start Game";
     private final String waitingString = "Waiting for another player";
     private final String unableToCommunicateWithOpponentString = "Unable to communicate with opponent.";
-    private final String wonString = " won!";
-    private final String enemyWonString = " Opponent won!";
+    private final String wonString = "You won!";
+    private final String enemyWonString = " won!";
     private final String tieString = "Game ended in a tie.";
     private boolean isFristRun = true;
     private boolean isCreateRoom = false;
+
+    public int oldPosition;
     public String[] positions = new String[9];
     private int[][] wins = new int[][]{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6}};
 
@@ -174,8 +176,6 @@ public class gameControl implements Runnable {
         thread.start();
     }
 
-    public int oldPosition;
-
     private void listenForServerRequest() {
         Socket socket = null;
         try {
@@ -191,6 +191,7 @@ public class gameControl implements Runnable {
 
     public void sendData(int i) {
         //System.out.println(i);
+        sender = null;
         sender = new Sender(dos);
         Tsender = new Thread(sender);
         sender.setData(i);
@@ -203,6 +204,7 @@ public class gameControl implements Runnable {
     }
 
     public void receiverData() {
+        receiver = null;
         receiver = new Receiver(dis);
         Treceiver = new Thread(receiver);
         Treceiver.start();
@@ -226,25 +228,33 @@ public class gameControl implements Runnable {
             if (isWon) {
                 if (isX) {
                     if (whoWin.equals("X")) {
-                        JOptionPane.showMessageDialog(FrameGame, FrameGame.getNamePlayer1() + wonString);
-                        myTurn = false;
+                        JOptionPane.showMessageDialog(FrameGame, wonString);
+                        //myTurn = false;
                     } else {
                         JOptionPane.showMessageDialog(FrameGame, FrameGame.getNamePlayer2() + enemyWonString);
-                        myTurn = true;
+                        //myTurn = true;
                     }
                 } else {
                     if (whoWin.equals("O")) {
-                        JOptionPane.showMessageDialog(FrameGame, FrameGame.getNamePlayer2() + wonString);
-                        myTurn = true;
+                        JOptionPane.showMessageDialog(FrameGame, wonString);
+                        //myTurn = false;
                     } else {
                         JOptionPane.showMessageDialog(FrameGame, FrameGame.getNamePlayer1() + enemyWonString);
-                        myTurn = false;
+                        //myTurn = true;
                     }
                 }
-                whoWin = "";
-                isWon = false;
-                positions = new String[9];
-                FrameGame.resetGame();
+                /* try {
+                    FrameGame.resetGame();
+                    System.out.println(myTurn);
+                    whoWin = "";
+                    isWon = false;
+                    positions = new String[9];
+                    oldPosition = 0;
+                    System.out.println("resetgame");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }*/
+
             }
         }
     }

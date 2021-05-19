@@ -9,7 +9,7 @@ public class Receiver implements Runnable {
     private Data load;
 
     public DataInputStream dis;
-    int receivedMessage;
+    public int receivedMessage;
 
     Receiver(DataInputStream data) {
         dis = data;
