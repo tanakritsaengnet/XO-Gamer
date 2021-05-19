@@ -1,28 +1,23 @@
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.swing.JButton;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-/**
- *
- * @author Bank
- */
 public class FrameGame extends javax.swing.JFrame {
 
     private gameControl xo;
+    private int position;
+    private List<JButton> jButtons;
 
-    /**
-     * Creates new form xoguitest
-     */
     public FrameGame() {
         initComponents();
+        this.jButtons = new ArrayList<>(Arrays.asList(jButton1, jButton2, jButton3, jButton4, jButton5, jButton6, jButton7, jButton8, jButton9));
     }
 
     public void setControl(gameControl gameControl) {
         xo = gameControl;
+        jButtons.add(jButton1);
     }
 
     /**
@@ -329,7 +324,6 @@ public class FrameGame extends javax.swing.JFrame {
         }
         this.position = position;
     }
-    private int position;
 
     public int getData() {
         return position;
@@ -343,8 +337,10 @@ public class FrameGame extends javax.swing.JFrame {
         boolean isComplete = jButton.getIcon() == null;
         if (isComplete) {
             if (xo.isO) {
+                xo.positions[position - 1] = "O";
                 jButton.setIcon(xo.imageO);
             } else {
+                xo.positions[position - 1] = "X";
                 jButton.setIcon(xo.imageX);
             }
         }
@@ -357,11 +353,12 @@ public class FrameGame extends javax.swing.JFrame {
         }
         JButton j = getJButton(position);
         if (xo.isO) {
+            xo.positions[position - 1] = "X";
             j.setIcon(xo.imageX);
         } else {
+            xo.positions[position - 1] = "O";
             j.setIcon(xo.imageO);
         }
-
         xo.oldPosition = position;
         return true;
     }
@@ -404,6 +401,22 @@ public class FrameGame extends javax.swing.JFrame {
 
     public void setNamePlayer2(String name) {
         jLabelPlayer2.setText(name);
+    }
+
+    public String getNamePlayer1() {
+        return jLabelPlayer1.getText();
+    }
+
+    public String getNamePlayer2() {
+        return jLabelPlayer2.getText();
+    }
+
+    public void resetGame() {
+        for (JButton jButton : jButtons) {
+            jButton.setIcon(null);
+        }
+        xo.oldPosition = 0;
+        position = 0;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

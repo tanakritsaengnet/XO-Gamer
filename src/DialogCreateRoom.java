@@ -1,15 +1,6 @@
 
 import javax.swing.JOptionPane;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-/**
- *
- * @author tanakrit
- */
 public class DialogCreateRoom extends javax.swing.JDialog {
 
     private gameControl xo = new gameControl();

@@ -11,16 +11,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-/**
- *
- * @author tanakrit
- */
 public class gameControl implements Runnable {
 
     private final static Logger LOGGER = Logger.getLogger(gameControl.class.getName());
@@ -31,16 +23,20 @@ public class gameControl implements Runnable {
     private BufferedReader br;
     private PrintWriter pw;
     private Thread thread;
+    private FrameGame FrameGame = new FrameGame();
 
+    private boolean isWon;
+    private String whoWin = "";
     private final String startString = "Start Game";
     private final String waitingString = "Waiting for another player";
     private final String unableToCommunicateWithOpponentString = "Unable to communicate with opponent.";
-    private final String wonString = "You won!";
-    private final String enemyWonString = "Opponent won!";
+    private final String wonString = " won!";
+    private final String enemyWonString = " Opponent won!";
     private final String tieString = "Game ended in a tie.";
     private boolean isFristRun = true;
     private boolean isCreateRoom = false;
-    private FrameGame FrameGame = new FrameGame();
+    public String[] positions = new String[9];
+    private int[][] wins = new int[][]{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6}};
 
     public boolean myTurn = false;
     public boolean isO = false;
@@ -50,6 +46,11 @@ public class gameControl implements Runnable {
 
     public DataOutputStream dos;
     public DataInputStream dis;
+
+    private Sender sender;
+    private Receiver receiver;
+    private Thread Tsender;
+    private Thread Treceiver;
 
     public gameControl() {
         try {
@@ -188,12 +189,6 @@ public class gameControl implements Runnable {
         }
     }
 
-    Data data = new Data();
-    Sender sender;
-    Receiver receiver;
-    Thread Tsender;
-    Thread Treceiver;
-
     public void sendData(int i) {
         //System.out.println(i);
         sender = new Sender(dos);
@@ -218,6 +213,42 @@ public class gameControl implements Runnable {
         }
     }
 
+    public void checkWin() {
+        for (int[] win : wins) {
+            if ("O".equals(positions[win[0]]) && "O".equals(positions[win[1]]) && "O".equals(positions[win[2]])) {
+                isWon = true;
+                whoWin = "O";
+            }
+            if ("X".equals(positions[win[0]]) && "X".equals(positions[win[1]]) && "X".equals(positions[win[2]])) {
+                isWon = true;
+                whoWin = "X";
+            }
+            if (isWon) {
+                if (isX) {
+                    if (whoWin.equals("X")) {
+                        JOptionPane.showMessageDialog(FrameGame, FrameGame.getNamePlayer1() + wonString);
+                        myTurn = false;
+                    } else {
+                        JOptionPane.showMessageDialog(FrameGame, FrameGame.getNamePlayer2() + enemyWonString);
+                        myTurn = true;
+                    }
+                } else {
+                    if (whoWin.equals("O")) {
+                        JOptionPane.showMessageDialog(FrameGame, FrameGame.getNamePlayer2() + wonString);
+                        myTurn = true;
+                    } else {
+                        JOptionPane.showMessageDialog(FrameGame, FrameGame.getNamePlayer1() + enemyWonString);
+                        myTurn = false;
+                    }
+                }
+                whoWin = "";
+                isWon = false;
+                positions = new String[9];
+                FrameGame.resetGame();
+            }
+        }
+    }
+
     @Override
     public void run() {
         if (isX) {
@@ -226,6 +257,7 @@ public class gameControl implements Runnable {
             connect(null);
         }
         while (true) {
+            checkWin();
             if (myTurn) {
                 int position = FrameGame.getData();
                 //System.out.println(position);
@@ -233,12 +265,12 @@ public class gameControl implements Runnable {
                 boolean isComplete = FrameGame.checkData(position);
                 //System.out.println(isComplete);
                 if (isComplete) {
-                    myTurn = false;
+                    myTurn = !myTurn;
                 }
             } else {
                 receiverData();
                 if (FrameGame.setData(receiver.getPosition())) {
-                    myTurn = true;
+                    myTurn = !myTurn;
                 }
             }
         }
